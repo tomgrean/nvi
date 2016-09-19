@@ -317,7 +317,7 @@ dmode=	755
 emode=	555
 fmode=	444
 
-install-exec-local:
+install-exec-hook:
 	cd $(DESTDIR)$(bindir) && $(rm) -f `echo ex | sed '$(transform)'`
 	cd $(DESTDIR)$(bindir) && $(rm) -f `echo view | sed '$(transform)'`
 	cd $(DESTDIR)$(bindir) && $(ln) \
