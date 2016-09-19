@@ -207,6 +207,12 @@ if test "$vi_cv_path_fuser" != no; then
 	INUSE='fuser -s $i'
 fi
 
+dnl Check for pkg-config
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+if test x$PKG_CONFIG = xno ; then
+    PKG_CONFIG=/bin/false
+fi
+
 dnl Check for programs used for installation
 AC_PROG_AWK
 AC_PATH_PROG(vi_cv_path_ar, ar, missing_ar)
@@ -266,11 +272,7 @@ AC_ARG_ENABLE(gtk,
 	[vi_cv_gtk=$enableval], [vi_cv_gtk="no"])
 AC_MSG_RESULT($vi_cv_gtk)
 if test "$vi_cv_gtk" = "yes"; then
-	#
-	# Find pkg-config
-	#
-	AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-	if test x$PKG_CONFIG = xno ; then
+	if $PKG_CONFIG ; then
 	    if test "$vi_cv_widechar" = "yes"; then
 	        AC_MSG_ERROR(
 [*** pkg-config not found. See http://pkgconfig.sourceforge.net])
@@ -282,12 +284,8 @@ if test "$vi_cv_gtk" = "yes"; then
 		    AC_MSG_ERROR(
 [*** pkg-config too old; version 0.5 or better required.])
 		fi
-		PKG_CONFIG=no
+		PKG_CONFIG=/bin/false
 	    fi
-
-	fi
-	if test x$PKG_CONFIG = xno ; then
-	    PKG_CONFIG=/bin/false
 	fi
 
 	vi_programs="$vi_programs vi-gtk"
@@ -510,37 +508,52 @@ dnl 	[
 	if test "x$with_curses" != "x"; then
 		CURSLDFLAGS="`echo $with_curses/lib | sed "$LRscript"` $CURSLDFLAGS"
 		CURSCPPFLAGS="-I$with_curses/include $CURSCPPFLAGS"
-	fi;
+	else
+	    if test "$vi_cv_widechar" = "yes"; then
+		CURSCPPFLAGS=$($PKG_CONFIG --cflags ncursesw)
+		CURLSLIBS=$($PKG_CONFIG --libs ncursesw)
+	    else
+		CURSCPPFLAGS=$($PKG_CONFIG --cflags ncurses)
+		CURLSLIBS=$($PKG_CONFIG --libs ncurses)
+	    fi
+	    if test $? != 0; then
+		vi_cv_curses=unknown
+	    else
+	        vi_programs="vi $vi_programs"
+	    fi
+	fi
 	LDFLAGS="$CURSLDFLAGS $LDFLAGS"
 	CPPFLAGS="$CURSCPPFLAGS $CPPFLAGS"
 
-	if test "$vi_cv_widechar" = "yes"; then
-	    for vi_cv_curses in ncurses ncursesw curses; do
-		AC_CHECK_LIB($vi_cv_curses, waddnwstr,[break])
-		vi_cv_curses=unknown
-	    done
-	else
-	    for vi_cv_curses in ncurses ncursesw curses; do
-		AC_CHECK_LIB($vi_cv_curses, initscr, [break])
-		vi_cv_curses=unknown
-	    done
-	fi
-
 	if test "$vi_cv_curses" != "unknown"; then
-	    CURSHEADER=curses.h
-	    if test "$vi_cv_curses" = "ncurses"; then
-		AC_CHECK_HEADERS(ncurses.h, [CURSHEADER=ncurses.h])
+	    if test "$vi_cv_widechar" = "yes"; then
+		for vi_cv_curses in ncurses ncursesw curses; do
+		    AC_CHECK_LIB($vi_cv_curses, waddnwstr,[break])
+		    vi_cv_curses=unknown
+		done
+	    else
+		for vi_cv_curses in ncurses ncursesw curses; do
+		    AC_CHECK_LIB($vi_cv_curses, initscr, [break])
+		    vi_cv_curses=unknown
+		done
 	    fi
-	    if test "$vi_cv_curses" = "ncursesw"; then
-		AC_CHECK_HEADERS(ncursesw/ncurses.h,
+
+	    if test "$vi_cv_curses" != "unknown"; then
+		CURSHEADER=curses.h
+		if test "$vi_cv_curses" = "ncurses"; then
+		    AC_CHECK_HEADERS(ncurses.h, [CURSHEADER=ncurses.h])
+		fi
+		if test "$vi_cv_curses" = "ncursesw"; then
+		    AC_CHECK_HEADERS(ncursesw/ncurses.h,
 			[CURSHEADER=ncursesw/ncurses.h])
-	    fi
-	    vi_programs="vi $vi_programs"
-	    CURSLIBS="-l$vi_cv_curses"
-	else
-	    AC_MSG_WARN([*** No suitable curses library found.])
-	    if test "$vi_programs"X = X; then
-		AC_MSG_ERROR([No executable to build.])
+		fi
+		vi_programs="vi $vi_programs"
+		CURSLIBS="-l$vi_cv_curses"
+	    else
+		AC_MSG_WARN([*** No suitable curses library found.])
+		if test "$vi_programs"X = X; then
+		    AC_MSG_ERROR([No executable to build.])
+		fi
 	    fi
 	fi
 
