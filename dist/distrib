@@ -81,6 +81,12 @@ ctags $ctagsopt -w \
 	../tcl_api/*.[ch] ../vi/*.[ch]
 chmod 444 $f
 
+# Build vi.0
+echo "Building vi.0"
+cd ../docs/vi.man
+make vi.0
+cd "$OLDPWD"
+
 date=`date +%Y-%m-%d`
 echo "Building ../ex/version.h"
 echo '#define VI_VERSION "'`git-describe` '('$date')"' > ../ex/version.h
