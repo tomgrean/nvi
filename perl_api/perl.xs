@@ -84,7 +84,7 @@ typedef struct _perl_data {
 	sp->wp->scr_msg = msghandler;
 #define	ENDMESSAGE(sp)							\
 	sp->wp->scr_msg = scr_msg;					\
-	if (rval) croak(PERLP(sp)->errmsg);
+	if (rval) croak("%s", PERLP(sp)->errmsg);
 
 void xs_init __P((pTHXo));
 
