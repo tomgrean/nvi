@@ -27,6 +27,7 @@ static const char sccsid[] = "$Id: screen.c,v 10.22 2001/06/25 15:19:12 skimo Ex
 
 #include "common.h"
 #include "../vi/vi.h"
+#include "../perl_api/extern.h"
 
 /*
  * screen_init --

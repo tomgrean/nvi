@@ -30,6 +30,7 @@ static const char sccsid[] = "$Id: ex_perl.c,v 8.11 2001/06/25 15:19:18 skimo Ex
 #include <unistd.h>
 
 #include "../common/common.h"
+#include "../perl_api/extern.h"
 
 /* 
  * ex_perl -- :[line [,line]] perl [command]
