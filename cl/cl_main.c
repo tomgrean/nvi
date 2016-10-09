@@ -23,6 +23,7 @@ static const char sccsid[] = "$Id: cl_main.c,v 10.54 2001/07/29 19:07:27 skimo E
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <term.h>
 #include <termios.h>
 #include <unistd.h>
 
