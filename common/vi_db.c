@@ -22,6 +22,7 @@ static const char sccsid[] = "$Id: db.c,v 10.48 2002/06/08 19:32:52 skimo Exp $ 
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "common.h"
