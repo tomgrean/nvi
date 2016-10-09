@@ -32,6 +32,7 @@ static const char sccsid[] = "$Id: perlsfio.c,v 8.3 2000/04/30 17:00:15 skimo Ex
 /* perl redefines them
  * avoid warnings
  */
+#undef re_compile
 #undef USE_DYNAMIC_LOADING
 #undef DEBUG
 #undef PACKAGE
