@@ -1,0 +1,10 @@
+0.
+before compiling the code, you need to install autoconf and automake.
+1.
+cd to the dist directory, and run autoconf, autoreconf,...
+2.
+cd to build.unix and run ../dist/configure
+3.
+run make to build vi.
+if you get an error that common/options_def.h is missing or something
+like that, you need to run ./distrib in dist/ directory.
